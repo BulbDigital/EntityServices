@@ -27,28 +27,28 @@ namespace EntityServices.Services
             EntityCrudService = entityCrudService;
         }
 
-        public IQueryable<TDto> Get()
+        public virtual IQueryable<TDto> Get()
         {
             var result = EntityCrudService.ReadManyNoTracked<TDto>();
             CombineStatuses(EntityCrudService);
             return result;
         }
 
-        public async Task<TDto> GetSingleAsync(Expression<Func<TDto, bool>> whereExpression)
+        public virtual async Task<TDto> GetSingleAsync(Expression<Func<TDto, bool>> whereExpression)
         {
             var result = await EntityCrudService.ReadSingleAsync(whereExpression);
             CombineStatuses(EntityCrudService);
             return result;
         }
 
-        public async Task<TDto> GetSingleAsync(params object[] keys)
+        public virtual async Task<TDto> GetSingleAsync(params object[] keys)
         {
             var result = await EntityCrudService.ReadSingleAsync<TDto>(keys);
             CombineStatuses(EntityCrudService);
             return result;
         }
 
-        public async Task<TCreate> CreateAsync<TCreate>(TCreate createDto)
+        public virtual async Task<TCreate> CreateAsync<TCreate>(TCreate createDto)
             where TCreate : class, ILinkToEntity<TEntity>, new()
         {
             var newEntity = await EntityCrudService.CreateAndSaveAsync(createDto);
@@ -56,7 +56,7 @@ namespace EntityServices.Services
             return newEntity;
         }
 
-        public async Task<TUpdate> UpdateAsync<TUpdate>(TUpdate updateDto)
+        public virtual async Task<TUpdate> UpdateAsync<TUpdate>(TUpdate updateDto)
             where TUpdate : class, ILinkToEntity<TEntity>, new()
         {
             await EntityCrudService.UpdateAndSaveAsync(updateDto, "AutoMapper");
@@ -64,13 +64,13 @@ namespace EntityServices.Services
             return updateDto;
         }
 
-        public async Task DeleteAsync(params object[] keys)
+        public virtual async Task DeleteAsync(params object[] keys)
         {
             await EntityCrudService.DeleteAndSaveAsync(keys);
             CombineStatuses(EntityCrudService);
         }
 
-        protected async Task ExecuteAsync(TDto dto, Expression<Action<TEntity>> expression)
+        protected virtual async Task ExecuteAsync(TDto dto, Expression<Action<TEntity>> expression)
         {
             await EntityCrudService.UpdateAndSaveAsync(dto, (expression.Body as MethodCallExpression).Method.Name);
         }
