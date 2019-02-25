@@ -27,23 +27,11 @@ namespace EntityServices.Services
             EntityCrudService = entityCrudService;
         }
 
-        public virtual IQueryable<TDto> Get(Func<IQueryable<TDto>, IQueryable<TDto>> query)
-        {
-            var result = query.Invoke(EntityCrudService.ReadManyNoTracked<TDto>());
-            CombineStatuses(EntityCrudService);
-            return result;
-        }
-
         public virtual IQueryable<TDto> Get()
         {
             var result = EntityCrudService.ProjectFromEntityToDto<TDto>(e => e);
             CombineStatuses(EntityCrudService);
             return result;
-        }
-
-        public virtual TDto GetSingle(Func<IQueryable<TDto>, IQueryable<TDto>> query)
-        {
-            return Get(query).FirstOrDefault();
         }
 
         public virtual async Task<TDto> GetSingleAsync(params object[] keys)
@@ -53,9 +41,9 @@ namespace EntityServices.Services
             return result;
         }
 
-        public virtual async Task<TDto> GetSingleAsync(Func<IQueryable<TDto>, bool> whereExpression)
+        public virtual async Task<TDto> GetSingleAsync(Expression<Func<TDto, bool>> whereExpression)
         {
-            var result = await EntityCrudService.ReadSingleAsync<TDto>(whereExpression);
+            var result = await EntityCrudService.ReadSingleAsync(whereExpression);
             CombineStatuses(EntityCrudService);
             return result;
         }

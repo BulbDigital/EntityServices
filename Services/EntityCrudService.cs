@@ -86,14 +86,14 @@ namespace EntityServices.Services
 
         async Task<TDto> IEntityCrudService<TEntity>.CreateAndSaveAsync<TDto>(TDto entityOrDto, string ctorOrStaticMethodName = null)
         {
-            var result = await CrudServices.CreateAndSaveAsync(entityOrDto, ctorOrStaticMethodName);
+            var result = await CrudServices.CreateAndSaveAsync<TDto>(entityOrDto, ctorOrStaticMethodName);
             CombineStatuses(CrudServices);
             return result;
         }
 
         public async Task<TEntity> CreateAndSaveAsync(TEntity entityOrDto, string ctorOrStaticMethodName = null)
         {
-            var result = await CrudServices.CreateAndSaveAsync(entityOrDto);
+            var result = await CrudServices.CreateAndSaveAsync(entityOrDto, ctorOrStaticMethodName);
             CombineStatuses(CrudServices);
             return result;
         }

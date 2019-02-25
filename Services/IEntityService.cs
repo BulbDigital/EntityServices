@@ -20,6 +20,6 @@ namespace EntityServices.Services
     {
         Task<TUpdate> UpdateAsync<TUpdate>(TUpdate updateDTO) where TUpdate : class, ILinkToEntity<TEntity>, new();
         Task<TCreate> CreateAsync<TCreate>(TCreate createDTO) where TCreate : class, ILinkToEntity<TEntity>, new();
-        Task ExecuteAsync(TDto dto, Expression<Action<TEntity>> expression);
+        Task DeleteAsync(params object[] keys);
     }
 }
