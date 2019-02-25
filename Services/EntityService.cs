@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace EntityServices.Services
 {
-    public class EntityService<TEntity, TDto> : EntityService<DbContext, TEntity, TDto>, IEntityService<TEntity, TDto>
+    public class EntityService<TEntity, TDto> : EntityService<DbContext, TEntity, TDto, TDto, TDto>, IEntityService<TEntity, TDto>
         where TEntity : class
         where TDto : class, ILinkToEntity<TEntity>
     {
@@ -16,10 +16,32 @@ namespace EntityServices.Services
         }
     }
 
-    public class EntityService<TContext, TEntity, TDto> : StatusGenericHandler, IEntityService<TContext, TEntity, TDto>
+    public class EntityService<TEntity, TDto, TCreateDto, TUpdateDto> : EntityService<DbContext, TEntity, TDto, TCreateDto, TUpdateDto>, IEntityService<TEntity, TDto, TCreateDto, TUpdateDto>
         where TEntity : class
         where TDto : class, ILinkToEntity<TEntity>
+        where TCreateDto : class, ILinkToEntity<TEntity>
+        where TUpdateDto : class, ILinkToEntity<TEntity>
+    {
+        public EntityService(IEntityCrudService<DbContext, TEntity> entityCrudService) : base(entityCrudService)
+        {
+        }
+    }
+
+    public class EntityService<TContext, TEntity, TDto> : EntityService<DbContext, TEntity, TDto, TDto, TDto>, IEntityService<TEntity, TDto>
+        where TEntity : class
+        where TDto : class, ILinkToEntity<TEntity>
+    {
+        public EntityService(IEntityCrudService<DbContext, TEntity> entityCrudService) : base(entityCrudService)
+        {
+        }
+    }
+
+    public class EntityService<TContext, TEntity, TDto, TCreateDto, TUpdateDto> : StatusGenericHandler, IEntityService<TContext, TEntity, TDto, TCreateDto, TUpdateDto>
         where TContext : DbContext
+        where TEntity : class
+        where TDto : class, ILinkToEntity<TEntity>
+        where TCreateDto : class, ILinkToEntity<TEntity>
+        where TUpdateDto : class, ILinkToEntity<TEntity>
     {
         protected readonly IEntityCrudService<TContext, TEntity> EntityCrudService;
         public EntityService(IEntityCrudService<TContext, TEntity> entityCrudService)
@@ -48,16 +70,14 @@ namespace EntityServices.Services
             return result;
         }
 
-        public virtual async Task<TCreate> CreateAsync<TCreate>(TCreate createDto)
-            where TCreate : class, ILinkToEntity<TEntity>, new()
+        public virtual async Task<TCreateDto> CreateAsync(TCreateDto createDto)
         {
             var newEntity = await EntityCrudService.CreateAndSaveAsync(createDto);
             CombineStatuses(EntityCrudService);
             return newEntity;
         }
 
-        public virtual async Task<TUpdate> UpdateAsync<TUpdate>(TUpdate updateDto)
-            where TUpdate : class, ILinkToEntity<TEntity>, new()
+        public virtual async Task<TUpdateDto> UpdateAsync(TUpdateDto updateDto)
         {
             await EntityCrudService.UpdateAndSaveAsync(updateDto, "AutoMapper");
             CombineStatuses(EntityCrudService);
