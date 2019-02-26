@@ -27,11 +27,12 @@ namespace EntityServices.Services
         }
     }
 
-    public class EntityService<TContext, TEntity, TDto> : EntityService<DbContext, TEntity, TDto, TDto, TDto>, IEntityService<TEntity, TDto>
+    public class EntityService<TContext, TEntity, TDto> : EntityService<TContext, TEntity, TDto, TDto, TDto>, IEntityService<TEntity, TDto>
+        where TContext : DbContext
         where TEntity : class
         where TDto : class, ILinkToEntity<TEntity>
     {
-        public EntityService(IEntityCrudService<DbContext, TEntity> entityCrudService) : base(entityCrudService)
+        public EntityService(IEntityCrudService<TContext, TEntity> entityCrudService) : base(entityCrudService)
         {
         }
     }
