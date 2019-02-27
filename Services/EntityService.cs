@@ -1,6 +1,8 @@
 ﻿using GenericServices;
 using Microsoft.EntityFrameworkCore;
 using System;
+using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
@@ -73,14 +75,24 @@ namespace EntityServices.Services
 
         public virtual async Task<TCreateDto> CreateAsync(TCreateDto createDto)
         {
+            if (!Validate(createDto))
+            {
+                return null;
+            }
+
             var newEntity = await EntityCrudService.CreateAndSaveAsync(createDto);
             CombineStatuses(EntityCrudService);
             return newEntity;
         }
 
-        public virtual async Task<TUpdateDto> UpdateAsync(TUpdateDto updateDto)
+        public virtual async Task<TUpdateDto> UpdateAsync(TUpdateDto updateDto, string method = "AutoMapper")
         {
-            await EntityCrudService.UpdateAndSaveAsync(updateDto, "AutoMapper");
+            if(!Validate(updateDto))
+            {
+                return null;
+            }
+
+            await EntityCrudService.UpdateAndSaveAsync(updateDto);
             CombineStatuses(EntityCrudService);
             return updateDto;
         }
@@ -93,7 +105,29 @@ namespace EntityServices.Services
 
         protected virtual async Task ExecuteAsync(TDto dto, Expression<Action<TEntity>> expression)
         {
+            if (!Validate(dto))
+            {
+                return;
+            }
+
             await EntityCrudService.UpdateAndSaveAsync(dto, (expression.Body as MethodCallExpression).Method.Name);
+        }
+
+        public bool Validate(object @object)
+        {
+            var context = new ValidationContext(@object, serviceProvider: null, items: null);
+            var validation = new List<ValidationResult>();
+            var result = Validator.TryValidateObject(
+                @object, context, validation,
+                validateAllProperties: true
+            );
+
+            if(validation.Count() > 0)
+            {
+                AddValidationResults(validation);
+            }
+
+            return result;
         }
     }
 }
