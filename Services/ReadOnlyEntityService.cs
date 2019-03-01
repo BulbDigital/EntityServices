@@ -47,21 +47,5 @@ namespace EntityServices.Services
             CombineStatuses(EntityCrudService);
             return result;
         }
-
-        #region Async Methods
-        public virtual async Task<TDto> GetSingleAsync(params object[] keys)
-        {
-            var result = await EntityCrudService.ReadSingleAsync<TDto>(keys);
-            CombineStatuses(EntityCrudService);
-            return result;
-        }
-
-        public virtual async Task<TDto> GetSingleAsync(Expression<Func<TDto, bool>> whereExpression)
-        {
-            var result = await EntityCrudService.ReadSingleAsync(whereExpression);
-            CombineStatuses(EntityCrudService);
-            return result;
-        }
-        #endregion
     }
 }
