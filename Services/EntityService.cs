@@ -59,6 +59,7 @@ namespace EntityServices.Services
             return result;
         }
 
+        #region Async Method
         public virtual async Task<TDto> GetSingleAsync(Expression<Func<TDto, bool>> whereExpression)
         {
             var result = await EntityCrudService.ReadSingleAsync(whereExpression);
@@ -112,6 +113,63 @@ namespace EntityServices.Services
 
             await EntityCrudService.UpdateAndSaveAsync(dto, (expression.Body as MethodCallExpression).Method.Name);
         }
+        #endregion
+
+        #region Sync Method
+        public virtual TDto GetSingle(Expression<Func<TDto, bool>> whereExpression)
+        {
+            var result = EntityCrudService.ReadSingle(whereExpression);
+            CombineStatuses(EntityCrudService);
+            return result;
+        }
+
+        public virtual TDto GetSingle(params object[] keys)
+        {
+            var result = EntityCrudService.ReadSingle<TDto>(keys);
+            CombineStatuses(EntityCrudService);
+            return result;
+        }
+
+        public virtual TCreateDto Create(TCreateDto createDto)
+        {
+            if (!Validate(createDto))
+            {
+                return null;
+            }
+
+            var newEntity = EntityCrudService.CreateAndSave(createDto);
+            CombineStatuses(EntityCrudService);
+            return newEntity;
+        }
+
+        public virtual TUpdateDto Update(TUpdateDto updateDto, string method = "AutoMapper")
+        {
+            if (!Validate(updateDto))
+            {
+                return null;
+            }
+
+            EntityCrudService.UpdateAndSave(updateDto);
+            CombineStatuses(EntityCrudService);
+            return updateDto;
+        }
+
+        public virtual void Delete(params object[] keys)
+        {
+            EntityCrudService.DeleteAndSave(keys);
+            CombineStatuses(EntityCrudService);
+        }
+
+        protected virtual void Execute(TDto dto, Expression<Action<TEntity>> expression)
+        {
+            if (!Validate(dto))
+            {
+                return;
+            }
+
+            EntityCrudService.UpdateAndSave(dto, (expression.Body as MethodCallExpression).Method.Name);
+        }
+        #endregion
 
         public bool Validate(object @object)
         {

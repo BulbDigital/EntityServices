@@ -33,6 +33,10 @@ namespace EntityServices.Services
         where TUpdateDto : class, ILinkToEntity<TEntity>
         where TCreateDto : class, ILinkToEntity<TEntity>
     {
+        TUpdateDto Update(TUpdateDto updateDto, string method = "AutoMapper");
+        TCreateDto Create(TCreateDto createDto);
+        void Delete(params object[] keys);
+
         Task<TUpdateDto> UpdateAsync(TUpdateDto updateDto, string method = "AutoMapper");
         Task<TCreateDto> CreateAsync(TCreateDto createDto);
         Task DeleteAsync(params object[] keys);

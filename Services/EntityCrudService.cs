@@ -11,7 +11,7 @@ namespace EntityServices.Services
     public class EntityCrudService<TEntity> : EntityCrudService<DbContext, TEntity>, IEntityCrudService<TEntity>
         where TEntity : class
     {
-        public EntityCrudService(ICrudServicesAsync<DbContext> crudServices) : base(crudServices)
+        public EntityCrudService(ICrudServices<DbContext> crudServices, ICrudServicesAsync<DbContext> crudServicesAsync) : base(crudServices, crudServicesAsync)
         {
         }
     }
@@ -20,38 +20,123 @@ namespace EntityServices.Services
         where TEntity : class
         where TContext : DbContext
     {
-        protected readonly ICrudServicesAsync<TContext> CrudServices;
-        public DbContext Context => CrudServices.Context;
+        protected readonly ICrudServicesAsync<TContext> CrudServicesAsync;
+        protected readonly ICrudServices<TContext> CrudServices;
+        public DbContext Context => CrudServicesAsync.Context;
 
-        public EntityCrudService(ICrudServicesAsync<TContext> crudServices)
+        public EntityCrudService(ICrudServices<TContext> crudServices, ICrudServicesAsync<TContext> crudServicesAsync)
         {
-            this.CrudServices = crudServices;
+            CrudServices = crudServices;
+            CrudServicesAsync = crudServicesAsync;
         }
 
+        #region Async Methods
         async Task<TDto> IEntityCrudService<TEntity>.ReadSingleAsync<TDto>(params object[] keys)
         {
-            var result = await CrudServices.ReadSingleAsync<TDto>(keys);
-            CombineStatuses(CrudServices);
+            var result = await CrudServicesAsync.ReadSingleAsync<TDto>(keys);
+            CombineStatuses(CrudServicesAsync);
             return result;
         }
 
         public async Task<TEntity> ReadSingleAsync(params object[] keys)
         {
-            var result = await CrudServices.ReadSingleAsync<TEntity>(keys);
-            CombineStatuses(CrudServices);
+            var result = await CrudServicesAsync.ReadSingleAsync<TEntity>(keys);
+            CombineStatuses(CrudServicesAsync);
             return result;
         }
 
         async Task<TDto> IEntityCrudService<TEntity>.ReadSingleAsync<TDto>(Expression<Func<TDto, bool>> whereExpression)
         {
-            var result = await CrudServices.ReadSingleAsync<TDto>(whereExpression);
-            CombineStatuses(CrudServices);
+            var result = await CrudServicesAsync.ReadSingleAsync(whereExpression);
+            CombineStatuses(CrudServicesAsync);
             return result;
         }
 
         public async Task<TEntity> ReadSingleAsync(Expression<Func<TEntity, bool>> whereExpression)
         {
-            var result = await CrudServices.ReadSingleAsync<TEntity>(whereExpression);
+            var result = await CrudServicesAsync.ReadSingleAsync(whereExpression);
+            CombineStatuses(CrudServicesAsync);
+            return result;
+        }
+
+        async Task<TDto> IEntityCrudService<TEntity>.CreateAndSaveAsync<TDto>(TDto entityOrDto, string ctorOrStaticMethodName = null)
+        {
+            var result = await CrudServicesAsync.CreateAndSaveAsync<TDto>(entityOrDto, ctorOrStaticMethodName);
+            CombineStatuses(CrudServicesAsync);
+            return result;
+        }
+
+        public async Task<TEntity> CreateAndSaveAsync(TEntity entityOrDto, string ctorOrStaticMethodName = null)
+        {
+            var result = await CrudServicesAsync.CreateAndSaveAsync(entityOrDto, ctorOrStaticMethodName);
+            CombineStatuses(CrudServicesAsync);
+            return result;
+        }
+
+        async Task IEntityCrudService<TEntity>.UpdateAndSaveAsync<TDto>(TDto entityOrDto, string methodName = null)
+        {
+            await CrudServicesAsync.UpdateAndSaveAsync(entityOrDto, methodName);
+            CombineStatuses(CrudServicesAsync);
+        }
+
+        public async Task UpdateAndSaveAsync(TEntity entityOrDto, string methodName = null)
+        {
+            await CrudServicesAsync.UpdateAndSaveAsync(entityOrDto, methodName);
+            CombineStatuses(CrudServicesAsync);
+        }
+
+        public async Task<TEntity> UpdateAndSaveAsync(JsonPatchDocument<TEntity> patch, params object[] keys)
+        {
+            var result = await CrudServicesAsync.UpdateAndSaveAsync(patch, keys);
+            CombineStatuses(CrudServicesAsync);
+            return result;
+        }
+
+        public async Task<TEntity> UpdateAndSaveAsync(JsonPatchDocument<TEntity> patch, Expression<Func<TEntity, bool>> whereExpression)
+        {
+            var result = await CrudServicesAsync.UpdateAndSaveAsync(patch, whereExpression);
+            CombineStatuses(CrudServicesAsync);
+            return result;
+        }
+
+        public async Task DeleteAndSaveAsync(params object[] keys)
+        {
+            await CrudServicesAsync.DeleteAndSaveAsync<TEntity>(keys);
+            CombineStatuses(CrudServicesAsync);
+        }
+
+        public async Task DeleteWithActionAndSaveAsyn(Func<DbContext, TEntity, Task<IStatusGeneric>> runBeforeDelete, params object[] keys)
+        {
+            await CrudServicesAsync.DeleteAndSaveAsync<TEntity>(runBeforeDelete, keys);
+            CombineStatuses(CrudServicesAsync);
+        }
+        #endregion
+
+        #region Sync Methods
+        TDto IEntityCrudService<TEntity>.ReadSingle<TDto>(params object[] keys)
+        {
+            var result = CrudServices.ReadSingle<TDto>(keys);
+            CombineStatuses(CrudServices);
+            return result;
+        }
+
+        public TEntity ReadSingle(params object[] keys)
+        {
+            var result = CrudServices.ReadSingle<TEntity>(keys);
+            CombineStatuses(CrudServices);
+            return result;
+        }
+
+        TDto IEntityCrudService<TEntity>.ReadSingle<TDto>(Expression<Func<TDto, bool>> whereExpression)
+        {
+            var result = CrudServices.ReadSingle(whereExpression);
+            CombineStatuses(CrudServices);
+            return result;
+        }
+
+        public TEntity ReadSingle(Expression<Func<TEntity, bool>> whereExpression)
+        {
+            var result = CrudServices.ReadSingle(whereExpression);
             CombineStatuses(CrudServices);
             return result;
         }
@@ -84,56 +169,57 @@ namespace EntityServices.Services
             return result;
         }
 
-        async Task<TDto> IEntityCrudService<TEntity>.CreateAndSaveAsync<TDto>(TDto entityOrDto, string ctorOrStaticMethodName = null)
+        TDto IEntityCrudService<TEntity>.CreateAndSave<TDto>(TDto entityOrDto, string ctorOrStaticMethodName = null)
         {
-            var result = await CrudServices.CreateAndSaveAsync<TDto>(entityOrDto, ctorOrStaticMethodName);
+            var result = CrudServices.CreateAndSave(entityOrDto, ctorOrStaticMethodName);
             CombineStatuses(CrudServices);
             return result;
         }
 
-        public async Task<TEntity> CreateAndSaveAsync(TEntity entityOrDto, string ctorOrStaticMethodName = null)
+        public TEntity CreateAndSave(TEntity entityOrDto, string ctorOrStaticMethodName = null)
         {
-            var result = await CrudServices.CreateAndSaveAsync(entityOrDto, ctorOrStaticMethodName);
+            var result = CrudServices.CreateAndSave(entityOrDto, ctorOrStaticMethodName);
             CombineStatuses(CrudServices);
             return result;
         }
 
-        async Task IEntityCrudService<TEntity>.UpdateAndSaveAsync<TDto>(TDto entityOrDto, string methodName = null)
+        void IEntityCrudService<TEntity>.UpdateAndSave<TDto>(TDto entityOrDto, string methodName = null)
         {
-            await CrudServices.UpdateAndSaveAsync(entityOrDto, methodName);
+            CrudServices.UpdateAndSave(entityOrDto, methodName);
             CombineStatuses(CrudServices);
         }
 
-        public async Task UpdateAndSaveAsync(TEntity entityOrDto, string methodName = null)
+        public void UpdateAndSave(TEntity entityOrDto, string methodName = null)
         {
-            await CrudServices.UpdateAndSaveAsync(entityOrDto, methodName);
+            CrudServices.UpdateAndSave(entityOrDto, methodName);
             CombineStatuses(CrudServices);
         }
 
-        public async Task<TEntity> UpdateAndSaveAsync(JsonPatchDocument<TEntity> patch, params object[] keys)
+        public TEntity UpdateAndSave(JsonPatchDocument<TEntity> patch, params object[] keys)
         {
-            var result = await CrudServices.UpdateAndSaveAsync(patch, keys);
+            var result = CrudServices.UpdateAndSave(patch, keys);
             CombineStatuses(CrudServices);
             return result;
         }
 
-        public async Task<TEntity> UpdateAndSaveAsync(JsonPatchDocument<TEntity> patch, Expression<Func<TEntity, bool>> whereExpression)
+        public TEntity UpdateAndSave(JsonPatchDocument<TEntity> patch, Expression<Func<TEntity, bool>> whereExpression)
         {
-            var result = await CrudServices.UpdateAndSaveAsync(patch, whereExpression);
+            var result = CrudServices.UpdateAndSave(patch, whereExpression);
             CombineStatuses(CrudServices);
             return result;
         }
 
-        public async Task DeleteAndSaveAsync(params object[] keys)
+        public void DeleteAndSave(params object[] keys)
         {
-            await CrudServices.DeleteAndSaveAsync<TEntity>(keys);
+            CrudServices.DeleteAndSave<TEntity>(keys);
             CombineStatuses(CrudServices);
         }
 
-        public async Task DeleteWithActionAndSaveAsyn(Func<DbContext, TEntity, Task<IStatusGeneric>> runBeforeDelete, params object[] keys)
+        public void DeleteWithActionAndSave(Func<DbContext, TEntity, Task<IStatusGeneric>> runBeforeDelete, params object[] keys)
         {
-            await CrudServices.DeleteAndSaveAsync<TEntity>(runBeforeDelete, keys);
+            CrudServices.DeleteAndSave<TEntity>(runBeforeDelete, keys);
             CombineStatuses(CrudServices);
         }
+        #endregion
     }
 }

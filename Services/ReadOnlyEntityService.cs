@@ -34,6 +34,21 @@ namespace EntityServices.Services
             return result;
         }
 
+        public virtual TDto GetSingle(params object[] keys)
+        {
+            var result = EntityCrudService.ReadSingle<TDto>(keys);
+            CombineStatuses(EntityCrudService);
+            return result;
+        }
+
+        public virtual TDto GetSingle(Expression<Func<TDto, bool>> whereExpression)
+        {
+            var result = EntityCrudService.ReadSingle(whereExpression);
+            CombineStatuses(EntityCrudService);
+            return result;
+        }
+
+        #region Async Methods
         public virtual async Task<TDto> GetSingleAsync(params object[] keys)
         {
             var result = await EntityCrudService.ReadSingleAsync<TDto>(keys);
@@ -47,5 +62,6 @@ namespace EntityServices.Services
             CombineStatuses(EntityCrudService);
             return result;
         }
+        #endregion
     }
 }
