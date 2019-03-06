@@ -104,7 +104,8 @@ namespace EntityServices.Services
             CombineStatuses(EntityCrudService);
         }
 
-        protected virtual void Execute(TDto dto, Expression<Action<TEntity>> expression)
+        protected virtual void Execute<TExecuteDto>(TExecuteDto dto, Expression<Action<TEntity>> expression)
+            where TExecuteDto : class, ILinkToEntity<TEntity>
         {
             if (!Validate(dto))
             {
