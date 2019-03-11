@@ -15,7 +15,9 @@ namespace EntityServices.Services
     public interface IEntityCrudServiceAsync<TContext, TEntity> : IEntityCrudServiceAsync<TEntity> 
         where TContext : DbContext
         where TEntity : class
-    { }
+    {
+        TContext TypedContext { get; }
+    }
 
     /// <summary>
     /// This is the sync interface to CrudServicesAsync, which assumes you have one DbContext which the CrudServices setup code will register to the DbContext type

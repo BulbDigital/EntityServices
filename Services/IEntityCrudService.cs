@@ -15,7 +15,9 @@ namespace EntityServices.Services
     public interface IEntityCrudService<TContext, TEntity> : IEntityCrudService<TEntity> 
         where TContext : DbContext
         where TEntity : class
-    { }
+    {
+        TContext TypedContext { get; }
+    }
 
     /// <summary>
     /// This is the sync interface to CrudServicesAsync, which assumes you have one DbContext which the CrudServices setup code will register to the DbContext type
@@ -30,7 +32,7 @@ namespace EntityServices.Services
         /// For instance, setting up a dropdownlist based on some other database data
         /// </summary>
         DbContext Context { get; }
-
+    
         #region Sync Methods
         /// <summary>
         /// This reads async a single entity or DTO given the key(s) of the entity you want to load

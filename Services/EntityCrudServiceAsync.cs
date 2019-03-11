@@ -22,6 +22,7 @@ namespace EntityServices.Services
     {
         protected readonly ICrudServicesAsync<TContext> CrudServicesAsync;
         public DbContext Context => CrudServicesAsync.Context;
+        public TContext TypedContext => CrudServicesAsync.Context as TContext;
 
         public EntityCrudServiceAsync(ICrudServices<TContext> crudServices, ICrudServicesAsync<TContext> crudServicesAsync)
         {
