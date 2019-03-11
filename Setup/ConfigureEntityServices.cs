@@ -11,6 +11,7 @@ namespace EntityServices.Setup
             params Assembly[] assembliesToScan) where TContext : DbContext
         {
             services.AddTransient(typeof(Services.IEntityCrudService<,>), typeof(Services.EntityCrudService<,>));
+            services.AddTransient(typeof(Services.IEntityCrudServiceAsync<,>), typeof(Services.EntityCrudServiceAsync<,>));
 
             return services.ConfigureGenericServicesEntities(typeof(TContext))
                 .ScanAssemblesForDtos(assembliesToScan)
