@@ -21,5 +21,8 @@ namespace EntityServices.Services
         IQueryable<TDto> Get();
         TDto GetSingle(params object[] keys);
         TDto GetSingle(Expression<Func<TDto, bool>> whereExpression);
+        IQueryable<TGetDto> Get<TGetDto>() where TGetDto : class, ILinkToEntity<TEntity>;
+        TGetDto GetSingle<TGetDto>(params object[] keys) where TGetDto : class, ILinkToEntity<TEntity>;
+        TGetDto GetSingle<TGetDto>(Expression<Func<TGetDto, bool>> whereExpression) where TGetDto : class, ILinkToEntity<TEntity>;
     }
 }

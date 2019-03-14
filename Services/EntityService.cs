@@ -59,8 +59,24 @@ namespace EntityServices.Services
             return result;
         }
 
+        public virtual IQueryable<TGetDto> Get<TGetDto>()
+             where TGetDto : class, ILinkToEntity<TEntity>
+        {
+            var result = EntityCrudService.ReadManyNoTracked<TGetDto>();
+            CombineStatuses(EntityCrudService);
+            return result;
+        }
+
         #region Sync Method
         public virtual TDto GetSingle(Expression<Func<TDto, bool>> whereExpression)
+        {
+            var result = EntityCrudService.ReadSingle(whereExpression);
+            CombineStatuses(EntityCrudService);
+            return result;
+        }
+
+        public virtual TGetDto GetSingle<TGetDto>(Expression<Func<TGetDto, bool>> whereExpression)
+             where TGetDto : class, ILinkToEntity<TEntity>
         {
             var result = EntityCrudService.ReadSingle(whereExpression);
             CombineStatuses(EntityCrudService);
@@ -70,6 +86,14 @@ namespace EntityServices.Services
         public virtual TDto GetSingle(params object[] keys)
         {
             var result = EntityCrudService.ReadSingle<TDto>(keys);
+            CombineStatuses(EntityCrudService);
+            return result;
+        }
+
+        public virtual TGetDto GetSingle<TGetDto>(params object[] keys)
+             where TGetDto : class, ILinkToEntity<TEntity>
+        {
+            var result = EntityCrudService.ReadSingle<TGetDto>(keys);
             CombineStatuses(EntityCrudService);
             return result;
         }
