@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace EntityServices.Services
 {
-    public class ReadOnlyEntityService<TEntity, TDto> : EntityService<DbContext, TEntity, TDto>, IReadOnlyEntityService<TEntity, TDto>
+    public class ReadOnlyEntityService<TEntity, TDto> : ReadOnlyEntityService<DbContext, TEntity, TDto>, IReadOnlyEntityService<TEntity, TDto>
         where TEntity : class
         where TDto : class, ILinkToEntity<TEntity>
     {
@@ -33,10 +33,27 @@ namespace EntityServices.Services
             CombineStatuses(EntityCrudService);
             return result;
         }
+        
+        public virtual IQueryable<TGetDto> Get<TGetDto>()
+             where TGetDto : class, ILinkToEntity<TEntity>
+        {
+            var result = EntityCrudService.ReadManyNoTracked<TGetDto>();
+            CombineStatuses(EntityCrudService);
+            return result;
+        }
+
 
         public virtual TDto GetSingle(params object[] keys)
         {
             var result = EntityCrudService.ReadSingle<TDto>(keys);
+            CombineStatuses(EntityCrudService);
+            return result;
+        }
+
+        public virtual TGetDto GetSingle<TGetDto>(params object[] keys)
+             where TGetDto : class, ILinkToEntity<TEntity>
+        {
+            var result = EntityCrudService.ReadSingle<TGetDto>(keys);
             CombineStatuses(EntityCrudService);
             return result;
         }
@@ -47,5 +64,14 @@ namespace EntityServices.Services
             CombineStatuses(EntityCrudService);
             return result;
         }
+
+        public virtual TGetDto GetSingle<TGetDto>(Expression<Func<TGetDto, bool>> whereExpression)
+             where TGetDto : class, ILinkToEntity<TEntity>
+        {
+            var result = EntityCrudService.ReadSingle(whereExpression);
+            CombineStatuses(EntityCrudService);
+            return result;
+        }
+
     }
 }

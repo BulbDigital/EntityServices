@@ -34,6 +34,15 @@ namespace EntityServices.Services
             return result;
         }
 
+        public virtual IQueryable<TGetDto> Get<TGetDto>()
+             where TGetDto : class, ILinkToEntity<TEntity>
+        {
+            var result = EntityCrudService.ReadManyNoTracked<TGetDto>();
+            CombineStatuses(EntityCrudService);
+            return result;
+        }
+
+
         #region Async Methods
         public virtual async Task<TDto> GetSingleAsync(params object[] keys)
         {
@@ -42,9 +51,25 @@ namespace EntityServices.Services
             return result;
         }
 
+        public virtual async Task<TGetDto> GetSingleAsync<TGetDto>(Expression<Func<TGetDto, bool>> whereExpression)
+             where TGetDto : class, ILinkToEntity<TEntity>
+        {
+            var result = await EntityCrudService.ReadSingleAsync(whereExpression);
+            CombineStatuses(EntityCrudService);
+            return result;
+        }
+
         public virtual async Task<TDto> GetSingleAsync(Expression<Func<TDto, bool>> whereExpression)
         {
             var result = await EntityCrudService.ReadSingleAsync(whereExpression);
+            CombineStatuses(EntityCrudService);
+            return result;
+        }
+
+        public virtual async Task<TGetDto> GetSingleAsync<TGetDto>(params object[] keys)
+             where TGetDto : class, ILinkToEntity<TEntity>
+        {
+            var result = await EntityCrudService.ReadSingleAsync<TGetDto>(keys);
             CombineStatuses(EntityCrudService);
             return result;
         }
