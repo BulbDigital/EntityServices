@@ -11,7 +11,7 @@ namespace EntityServices.Services
     public class EntityCrudServiceAsync<TEntity> : EntityCrudServiceAsync<DbContext, TEntity>, IEntityCrudServiceAsync<TEntity>
         where TEntity : class
     {
-        public EntityCrudServiceAsync(ICrudServices<DbContext> crudServices, ICrudServicesAsync<DbContext> crudServicesAsync) : base(crudServices, crudServicesAsync)
+        public EntityCrudServiceAsync(ICrudServicesAsync<DbContext> crudServicesAsync) : base(crudServicesAsync)
         {
         }
     }
@@ -24,7 +24,7 @@ namespace EntityServices.Services
         public DbContext Context => CrudServicesAsync.Context;
         public TContext TypedContext => CrudServicesAsync.Context as TContext;
 
-        public EntityCrudServiceAsync(ICrudServices<TContext> crudServices, ICrudServicesAsync<TContext> crudServicesAsync)
+        public EntityCrudServiceAsync(ICrudServicesAsync<TContext> crudServicesAsync)
         {
             CrudServicesAsync = crudServicesAsync;
         }
