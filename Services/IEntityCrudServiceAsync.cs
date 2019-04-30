@@ -33,6 +33,8 @@ namespace EntityServices.Services
         /// </summary>
         DbContext Context { get; }
 
+        ICrudServicesAsync CrudServicesAsync { get; }
+
         #region Async Methods
         /// <summary>
         /// This reads async a single entity or DTO given the key(s) of the entity you want to load

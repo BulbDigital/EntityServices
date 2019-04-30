@@ -20,7 +20,7 @@ namespace EntityServices.Services
         where TEntity : class
         where TContext : DbContext
     {
-        protected readonly ICrudServicesAsync<TContext> CrudServicesAsync;
+        public ICrudServicesAsync CrudServicesAsync { get; private set; }
         public DbContext Context => CrudServicesAsync.Context;
         public TContext TypedContext => CrudServicesAsync.Context as TContext;
 

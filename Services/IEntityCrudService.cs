@@ -32,6 +32,8 @@ namespace EntityServices.Services
         /// For instance, setting up a dropdownlist based on some other database data
         /// </summary>
         DbContext Context { get; }
+
+        ICrudServices CrudServices { get; }
     
         #region Sync Methods
         /// <summary>
