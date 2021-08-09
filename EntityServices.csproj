@@ -1,17 +1,17 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFrameworks>netstandard2.1;netcoreapp3.0</TargetFrameworks>
+    <TargetFrameworks>netstandard2.1;netcoreapp3.1</TargetFrameworks>
     <PackageId>EntityServices</PackageId>
-    <Version>0.1.16</Version>
+    <Version>0.1.17</Version>
     <Company>Bulb Digital</Company>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="EfCore.GenericServices" Version="3.0.0" />
-    <PackageReference Include="EfCore.GenericServices.AspNetCore" Version="3.0.2" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="3.0.3" />
+    <PackageReference Include="EfCore.GenericServices" Version="3.3.0" />
+    <PackageReference Include="EfCore.GenericServices.AspNetCore" Version="4.1.1" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="3.1.17" />
   </ItemGroup>
 
 </Project>
