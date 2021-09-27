@@ -29,11 +29,16 @@ namespace EntityServices.Services
       EntityCrudService = entityCrudService;
     }
 
-    public virtual IQueryable<TDto> Get()
+    public virtual IQueryable<TDto> Get(Func<IQueryable<TEntity>, IQueryable<TEntity>> query)
     {
-      var result = EntityCrudService.ProjectFromEntityToDto<TDto>(e => e);
+      var result = EntityCrudService.ProjectFromEntityToDto<TDto>(query);
       CombineStatuses(EntityCrudService);
       return result;
+    }
+
+    public virtual IQueryable<TDto> Get()
+    {
+      return Get(e=>e);
     }
 
     public virtual IQueryable<TGetDto> Get<TGetDto>()

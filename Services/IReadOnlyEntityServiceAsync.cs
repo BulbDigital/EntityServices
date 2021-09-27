@@ -20,6 +20,7 @@ namespace EntityServices.Services
       where TDto : class, ILinkToEntity<TEntity>
   {
     IQueryable<TDto> Get();
+    IQueryable<TDto> Get(Func<IQueryable<TEntity>, IQueryable<TEntity>> query);
     Task<TDto> GetSingleAsync(params object[] keys);
     Task<TDto> GetSingleAsync(Expression<Func<TDto, bool>> whereExpression);
     IQueryable<TGetDto> Get<TGetDto>() where TGetDto : class, ILinkToEntity<TEntity>;

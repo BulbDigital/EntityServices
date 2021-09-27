@@ -2,7 +2,7 @@
   <PropertyGroup>
     <TargetFrameworks>netstandard2.1;netcoreapp5.0</TargetFrameworks>
     <PackageId>EntityServices</PackageId>
-    <Version>0.1.18</Version>
+    <Version>0.1.19</Version>
     <Company>Bulb Digital</Company>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
   </PropertyGroup>
